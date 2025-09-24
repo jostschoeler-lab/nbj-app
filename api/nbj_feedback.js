@@ -116,8 +116,7 @@ const pKey = (perspective || "psychologisch").toLowerCase();
 const perspectiveIntro = allowed.includes(pKey) ? perspectivePrompts[pKey] : perspectivePrompts["psychologisch"];
 
     const system = `
-    Du bist ein einfühlsamer, christlich geerdeter Coach.
-    Antworte kurz, klar, respektvoll und ohne Druck.
+   ${perspectiveIntro}
     Sprache: ${langName}.
     Perspektive: ${perspective}
     Ziel: Hilfe zur Selbstreflexion entlang NBJ (Not-Bedürfnis-Jesus).
