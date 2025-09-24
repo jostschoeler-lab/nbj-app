@@ -326,5 +326,296 @@ ${e.o?`<div class="small" style="margin-top:4px;white-space:pre-wrap">${esc(e.o)
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 }catch(e){ showErr(e.message || e); console.error(e); }
 </script>
+<!-- ===== KI-Feedback: Minimaler Test ===== -->
+<section id="aiBox" class="card" style="margin:16px 0;padding:12px;">
+  <h2>KI-Feedback (Test)</h2>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="4" style="width:100%;margin:8px 0;"
+            placeholder="Schreibe hier deine Frage oder den Schritt-Text…"></textarea>
+
+  <button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button>
+
+  <div id="aiOut" class="entry" style="margin-top:8px;white-space:pre-wrap;"></div>
+</section>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Frage wird an die KI gesendet …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler: ' + res.status + ' – ' + msg);
+    }
+
+    const data = await res.json();
+    // Versuche ein paar typische Felder:
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+<!-- ===== Ende Testblock ===== -->
+<!-- ===== KI-Feedback: Minimaler Test ===== -->
+<section id="aiBox" class="card" style="margin:16px 0;padding:12px;">
+  <h2>KI-Feedback (Test)</h2>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="4" style="width:100%;margin:8px 0;"
+            placeholder="Schreibe hier deine Frage oder den Schritt-Text…"></textarea>
+
+  <button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button>
+
+  <div id="aiOut" class="entry" style="margin-top:8px;white-space:pre-wrap;"></div>
+</section>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Frage wird an die KI gesendet …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler: ' + res.status + ' – ' + msg);
+    }
+
+    const data = await res.json();
+    // Versuche ein paar typische Felder:
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+<!-- ===== Ende Testblock ===== -->
+<!-- ===== KI-Feedback: Minimaler Test ===== -->
+<section id="aiBox" class="card" style="margin:16px 0;padding:12px;">
+  <h2>KI-Feedback (Test)</h2>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="4" style="width:100%;margin:8px 0;"
+            placeholder="Schreibe hier deine Frage oder den Schritt-Text…"></textarea>
+
+  <button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button>
+
+  <div id="aiOut" class="entry" style="margin-top:8px;white-space:pre-wrap;"></div>
+</section>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Frage wird an die KI gesendet …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler: ' + res.status + ' – ' + msg);
+    }
+
+    const data = await res.json();
+    // Versuche ein paar typische Felder:
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+<!-- ===== Ende Testblock ===== -->
+<!-- ===== KI-Feedback: Minimaler Test ===== -->
+<section id="aiBox" class="card" style="margin:16px 0;padding:12px;">
+  <h2>KI-Feedback (Test)</h2>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="4" style="width:100%;margin:8px 0;"
+            placeholder="Schreibe hier deine Frage oder den Schritt-Text…"></textarea>
+
+  <button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button>
+
+  <div id="aiOut" class="entry" style="margin-top:8px;white-space:pre-wrap;"></div>
+</section>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Frage wird an die KI gesendet …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler: ' + res.status + ' – ' + msg);
+    }
+
+    const data = await res.json();
+    // Versuche ein paar typische Felder:
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+<!-- ===== Ende Testblock ===== -->
+<!-- ===== KI-Feedback: Minimaler Test ===== -->
+<section id="aiBox" class="card" style="margin:16px 0;padding:12px;">
+  <h2>KI-Feedback (Test)</h2>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="4" style="width:100%;margin:8px 0;"
+            placeholder="Schreibe hier deine Frage oder den Schritt-Text…"></textarea>
+
+  <button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button>
+
+  <div id="aiOut" class="entry" style="margin-top:8px;white-space:pre-wrap;"></div>
+</section>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Frage wird an die KI gesendet …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler: ' + res.status + ' – ' + msg);
+    }
+
+    const data = await res.json();
+    // Versuche ein paar typische Felder:
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+<!-- ===== Ende Testblock ===== -->
+
 </body>
 </html>
