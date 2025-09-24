@@ -376,7 +376,7 @@ async function sendAI(){
     const res = await fetch('/api/nbj_feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text })
+      body: JSON.stringify({ lang, text, perspective })
     });
 
     if(!res.ok){
@@ -434,7 +434,7 @@ async function sendAI(){
     const res = await fetch('/api/nbj_feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text })
+      body: JSON.stringify({ lang, text, perspective })
     });
 
     if(!res.ok){
@@ -492,7 +492,7 @@ async function sendAI(){
     const res = await fetch('/api/nbj_feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text })
+      body: JSON.stringify({ lang, text, perspective })
     });
 
     if(!res.ok){
@@ -550,7 +550,7 @@ async function sendAI(){
     const res = await fetch('/api/nbj_feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text })
+      body: JSON.stringify({ lang, text, perspective })
     });
 
     if(!res.ok){
@@ -608,7 +608,7 @@ async function sendAI(){
     const res = await fetch('/api/nbj_feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text })
+      body: JSON.stringify({ lang, text, perspective })
     });
 
     if(!res.ok){
