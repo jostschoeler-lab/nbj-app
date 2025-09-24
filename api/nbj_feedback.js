@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     const temperature = parseFloat(process.env.TEMPERATURE || "0.7");
 
     // Eingaben aus der Anfrage
-    const { lang = "de", step = 1, text = "" } = req.body || {};
+   const { lang = "de", step = 1, text = "", perspective = "psychologisch" } = req.body || {};
 
     // Sprachmapping
     const languageNames = {
