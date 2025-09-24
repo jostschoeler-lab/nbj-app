@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NBJ · Multi-Language (DE/NO/EN/ES)</title>
+<style>
+  :root{--bg:#f8fafc;--card:#ffffff;--text:#0f172a;--muted:#475569;--soft:#e2e8f0;--ok:#059669;--warn:#d97706;--dark:#111827;--accent:#0ea5e9}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:920px;margin:20px auto;padding:0 16px}
+  h1{font-size:26px;margin:0 0 6px} p.lead{color:var(--muted);margin:0 0 12px}
+  .card{background:var(--card);border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:16px;margin:14px 0}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .btn.ok{background:var(--ok);color:#fff} .btn.warn{background:var(--warn);color:#fff} .btn.dark{background:var(--dark);color:#fff} .btn.ghost{background:#e5e7eb;color:#111827}
+  .badge{background:#e5e7eb;border-radius:10px;padding:4px 8px;font-size:12px}
+  .title{font-weight:800}
+  .muted{color:var(--muted)}
+  .mono{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .timer{font-size:44px}
+  .grid{display:grid;gap:12px}
+  .grid-5{grid-template-columns:repeat(1,1fr)} @media(min-width:820px){.grid-5{grid-template-columns:repeat(5,1fr)}}
+  input[type=number],input[type=text],textarea,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px}
+  textarea{min-height:90px;resize:vertical}
+  .entry{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px;padding:10px}
+  .small{font-size:12px}
+  .right{margin-left:auto}
+  .pill{background:#def7ec;color:#065f46;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+  .err{background:#fde8e8;color:#991b1b;border-radius:8px;padding:6px 10px;margin-left:8px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Not–Bedürfnis–Jesus · Multi-Language
+    <span id="jsStatus" class="pill" aria-live="polite">prüfe JS…</span>
+    <span id="jsError" class="err" style="display:none"></span>
+  </h1>
+  <p class="lead">Sprache wählen → passende Stimmen. Beep am Schrittende, Vorlesen & Diktat, Sprachbefehle. Für Auto/BT: „Audio testen“ drücken.</p>
+
+  <div class="card">
+    <div class="row">
+      <label class="small"><div class="small title" id="lblLang">Sprache</div>
+        <select id="langSel">
+          <option value="de">Deutsch</option>
+          <option value="nb">Norsk (Bokmål)</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </label>
+      <label class="small"><div class="small title" id="lblVoice">Stimme</div>
+        <select id="voiceSel"></select>
+      </label>
+      <button class="btn ghost" id="btnAudioTest">Audio testen</button>
+      <label class="small" style="display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="autoSpeak"/> <span id="lblAutoSpeak">automatisch vorlesen</span>
+      </label>
+      <label class="small" style="display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="voiceCmds"/> <span id="lblVoiceCmds">Sprachbefehle</span>
+      </label>
+      <div class="right" id="hintInstall"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div class="title" id="lblCurrentStep">Aktueller Schritt</div>
+      <div class="badge"><span id="stepIndex">1</span> / <span id="stepTotal">5</span></div>
+    </div>
+    <div class="title" id="stepName" style="margin-top:6px">1) Ankommen</div>
+    <div class="muted" id="stepGuidance">Setz dich bequem hin. Spüre Füße am Boden, Rücken am Stuhl. 2–3 ruhige Atemzüge. Werde präsent.</div>
+
+    <div class="row" style="align-items:baseline;margin-top:8px">
+      <div class="timer mono" id="timer">0:30</div><div class="muted" id="lblSeconds">Sekunden</div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <button class="btn ok" id="startBtn">Start</button>
+      <button class="btn warn" id="pauseBtn">Pause</button>
+      <button class="btn dark" id="nextBtn">Weiter</button>
+      <button class="btn ghost" id="resetBtn">Reset</button>
+      <button class="btn ghost" id="speakBtn">Vorlesen</button>
+    </div>
+
+    <div class="card" style="margin:16px 0 0">
+      <div class="title" style="margin-bottom:6px" id="lblDur">Zeiten anpassen (Sekunden)</div>
+      <div class="grid grid-5" id="durationGrid"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn dark" id="saveDurations">Zeiten speichern</button>
+        <button class="btn ghost" id="resetDurations">Auf Standard</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title" id="lblJournal">Journal (lokal)</div>
+    <div class="grid">
+      <div>
+        <label class="small" id="lblFeel">Gefühl(e)</label>
+        <div class="row"><input type="text" id="feel"><button class="btn ghost" id="micFeel">🎤</button></div>
+      </div>
+      <div>
+        <label class="small" id="lblNeed">Bedürfnis(se)</label>
+        <div class="row"><input type="text" id="need"><button class="btn ghost" id="micNeed">🎤</button></div>
+      </div>
+      <div>
+        <label class="small" id="lblWith">Mit Jesus erlebt</label>
+        <div class="row"><textarea id="withJesus"></textarea><button class="btn ghost" id="micWith">🎤</button></div>
+      </div>
+      <div>
+        <label class="small" id="lblNotes">Weitere Notizen</label>
+        <div class="row"><textarea id="notes"></textarea><button class="btn ghost" id="micNotes">🎤</button></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ok" id="saveEntry">Eintrag speichern</button>
+      <button class="btn dark" id="exportBtn">Export (.json)</button>
+      <button class="btn ghost" id="clearBtn">Alle Einträge löschen</button>
+      <span class="right small muted" id="autosave">Automatisch gespeichert ✓</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title" id="lblEntries">Deine Einträge</div>
+    <div id="entries"></div>
+  </div>
+</div>
+
+<script>
+/* === Selbsttest & Fehleranzeige === */
+const jsStatus = document.getElementById('jsStatus');
+const jsError  = document.getElementById('jsError');
+function okBadge(msg){ jsStatus.textContent = msg || 'JS läuft ✅'; }
+function showErr(e){ jsError.style.display='inline-block'; jsError.textContent = 'Fehler: '+e; jsStatus.textContent='JS-Fehler ❌'; }
+try{ okBadge('JS läuft ✅'); }catch(e){ showErr(e); }
+
+/* === App-Logik === */
+try{
+const i18n = {
+  de:{ui:{language:"Sprache",voice:"Stimme",autoSpeak:"automatisch vorlesen",voiceCmds:"Sprachbefehle",currentStep:"Aktueller Schritt",seconds:"Sekunden",adjust:"Zeiten anpassen (Sekunden)",journal:"Journal (lokal)",feel:"Gefühl(e)",need:"Bedürfnis(se)",with:"Mit Jesus erlebt",notes:"Weitere Notizen",save:"Eintrag speichern",export:"Export (.json)",clear:"Alle Einträge löschen",entries:"Deine Einträge",start:"Start",pause:"Pause",next:"Weiter",reset:"Reset",speak:"Vorlesen",audioTest:"Audio testen",install:"⋮ → Zum Startbildschirm hinzufügen",none:"Noch keine Einträge gespeichert."},
+      steps:[{title:"1) Ankommen",guide:"Setz dich bequem hin. Spüre Füße am Boden, Rücken am Stuhl. 2–3 ruhige Atemzüge. Werde präsent.",s:30},{title:"2) Not spüren",guide:"Frag dich: Was bedrückt dich gerade? Benenne 1 Gefühl. Bleib sanft dabei, ohne zu analysieren.",s:180},{title:"3) Bedürfnis benennen",guide:"Wenn das Gefühl sprechen könnte: Was bräuchte es? (Geborgenheit, Trost, Sicherheit, Autonomie …)",s:60},{title:"4) Jesus dazunehmen",guide:"Stell dir vor: Jesus ist bei dir. Sag ihm dein Bedürfnis. Erlaube, dass Trost/Mut/Weisheit ankommt.",s:120},{title:"5) Abschluss",guide:"Danke, Jesus. Beweg Hände/Füße, atme ruhig. Notiere 1–2 Sätze: Was hast du bemerkt?",s:30}],
+      voiceCmdList:["start","pause","weiter","wiederholen","vorlesen","zurück","reset","stop","beenden"],langCodes:["de-DE","de-AT","de-CH"],srLang:"de-DE"},
+  nb:{ui:{language:"Språk",voice:"Stemme",autoSpeak:"les høyt automatisk",voiceCmds:"Talekommandoer",currentStep:"Aktuelt trinn",seconds:"Sekunder",adjust:"Juster tider (sekunder)",journal:"Journal (lokalt)",feel:"Følelse(r)",need:"Behov",with:"Opplevd med Jesus",notes:"Notater",save:"Lagre",export:"Eksport (.json)",clear:"Slett alle",entries:"Dine oppføringer",start:"Start",pause:"Pause",next:"Neste",reset:"Nullstill",speak:"Les høyt",audioTest:"Lydtest",install:"⋮ → Legg til på startskjermen",none:"Ingen oppføringer enda."},
+      steps:[{title:"1) Ankomme",guide:"Sett deg godt til rette. Kjenn føttene i gulvet og ryggen mot stolen. Pust rolig.",s:30},{title:"2) Kjenne nøden",guide:"Hva tynger deg nå? Nevn én følelse. Vær mild mot deg selv, uten å analysere.",s:180},{title:"3) Navngi behovet",guide:"Om følelsen kunne snakke: Hva trenger den? (Trygghet, trøst, sikkerhet, autonomi …)",s:60},{title:"4) Invitere Jesus",guide:"Se for deg at Jesus er hos deg. Si behovet ditt. La trøst/mot/visdom komme.",s:120},{title:"5) Avslutning",guide:"Takk, Jesus. Beveg hender/føtter, pust rolig. Ta med deg det som var godt.",s:30}],
+      voiceCmdList:["start","pause","neste","les","gjenta","tilbake","stopp","avslutt","reset"],langCodes:["nb-NO","no-NO","nn-NO"],srLang:"nb-NO"},
+  en:{ui:{language:"Language",voice:"Voice",autoSpeak:"auto read-aloud",voiceCmds:"Voice commands",currentStep:"Current step",seconds:"seconds",adjust:"Adjust durations (seconds)",journal:"Journal (local)",feel:"Feeling(s)",need:"Need(s)",with:"With Jesus",notes:"Notes",save:"Save entry",export:"Export (.json)",clear:"Delete all",entries:"Your entries",start:"Start",pause:"Pause",next:"Next",reset:"Reset",speak:"Read",audioTest:"Audio test",install:"⋮ → Add to Home screen",none:"No entries yet."},
+      steps:[{title:"1) Arrive",guide:"Sit comfortably. Feel your feet on the ground and your back on the chair. Breathe calmly.",s:30},{title:"2) Feel the pain",guide:"What burdens you right now? Name one feeling. Stay gentle, without analysis.",s:180},{title:"3) Name the need",guide:"If the feeling could speak, what would it need? (Safety, comfort, security, autonomy …)",s:60},{title:"4) Invite Jesus",guide:"Imagine Jesus with you. Tell him your need. Allow comfort/courage/wisdom to come.",s:120},{title:"5) Close",guide:"Thank you, Jesus. Move hands/feet, breathe calmly. Take with you what was good.",s:30}],
+      voiceCmdList:["start","pause","next","read","repeat","back","reset","stop","finish"],langCodes:["en-US","en-GB","en-AU","en-CA"],srLang:"en-US"},
+  es:{ui:{language:"Idioma",voice:"Voz",autoSpeak:"leer automáticamente",voiceCmds:"Comandos de voz",currentStep:"Paso actual",seconds:"segundos",adjust:"Ajustar duraciones (segundos)",journal:"Diario (local)",feel:"Emoción(es)",need:"Necesidad(es)",with:"Con Jesús",notes:"Notas",save:"Guardar",export:"Exportar (.json)",clear:"Borrar todo",entries:"Tus entradas",start:"Iniciar",pause:"Pausa",next:"Siguiente",reset:"Reiniciar",speak:"Leer",audioTest:"Prueba de audio",install:"⋮ → Añadir a la pantalla de inicio",none:"Aún no hay entradas."},
+      steps:[{title:"1) Llegar",guide:"Siéntate cómodo. Siente tus pies en el suelo y tu espalda en la silla. Respira calmamente.",s:30},{title:"2) Sentir la necesidad",guide:"¿Qué te pesa ahora? Nombra una emoción. Mantente suave, sin análisis.",s:180},{title:"3) Nombrar la necesidad",guide:"Si la emoción hablara, ¿qué necesitaría? (Seguridad, consuelo, protección, autonomía …)",s:60},{title:"4) Invitar a Jesús",guide:"Imagina a Jesús contigo. Dile tu necesidad. Permite que llegue consuelo/valor/sabiduría.",s:120},{title:"5) Cierre",guide:"Gracias, Jesús. Mueve manos/pies, respira con calma. Llévate lo bueno.",s:30}],
+      voiceCmdList:["iniciar","pausa","siguiente","leer","repetir","atrás","reiniciar","detener","terminar"],langCodes:["es-ES","es-MX","es-419"],srLang:"es-ES"}
+};
+
+const $=id=>document.getElementById(id);
+const langSel=$("langSel"), voiceSel=$("voiceSel"), autoSpeak=$("autoSpeak"), voiceCmds=$("voiceCmds");
+const stepName=$("stepName"), stepGuidance=$("stepGuidance"), stepIndex=$("stepIndex"), stepTotal=$("stepTotal"), timerEl=$("timer");
+const startBtn=$("startBtn"), pauseBtn=$("pauseBtn"), nextBtn=$("nextBtn"), resetBtn=$("resetBtn"), speakBtn=$("speakBtn");
+const durationGrid=$("durationGrid"), saveDurationsBtn=$("saveDurations"), resetDurationsBtn=$("resetDurations");
+const feel=$("feel"), need=$("need"), withJesus=$("withJesus"), notes=$("notes"), entriesEl=$("entries"), exportBtn=$("exportBtn"), clearBtn=$("clearBtn"), saveEntryBtn=$("saveEntry");
+const lblLang=$("lblLang"), lblVoice=$("lblVoice"), lblAutoSpeak=$("lblAutoSpeak"), lblVoiceCmds=$("lblVoiceCmds"), lblCurrentStep=$("lblCurrentStep"), lblSeconds=$("lblSeconds"), lblDur=$("lblDur"), lblJournal=$("lblJournal"), lblFeel=$("lblFeel"), lblNeed=$("lblNeed"), lblWith=$("lblWith"), lblNotes=$("lblNotes"), lblEntries=$("lblEntries"), autosaveLbl=$("autosave"), btnAudioTest=$("btnAudioTest"), hintInstall=$("hintInstall");
+
+let lang="de", steps=i18n[lang].steps.map(x=>({...x})), idx=0, remaining=steps[0].s, running=false, intervalId=null;
+
+stepTotal.textContent=steps.length;
+renderUI(); renderStep(); renderDurations(); populateVoices(); renderEntries();
+if(window.speechSynthesis){ window.speechSynthesis.onvoiceschanged=populateVoices; }
+
+function renderUI(){ const t=i18n[lang].ui;
+  lblLang.textContent=t.language; lblVoice.textContent=t.voice; lblAutoSpeak.textContent=t.autoSpeak; lblVoiceCmds.textContent=t.voiceCmds;
+  lblCurrentStep.textContent=t.currentStep; lblSeconds.textContent=t.seconds; lblDur.textContent=t.adjust;
+  lblJournal.textContent=t.journal; lblFeel.textContent=t.feel; lblNeed.textContent=t.need; lblWith.textContent=t.with; lblNotes.textContent=t.notes;
+  saveEntryBtn.textContent=t.save; exportBtn.textContent=t.export; clearBtn.textContent=t.clear;
+  lblEntries.textContent=t.entries; btnAudioTest.textContent=t.audioTest; hintInstall.textContent=t.install;
+  const ph = {de:["z. B. Angst, Traurigkeit, Zorn …","z. B. Geborgenheit, Sicherheit, Trost, Autonomie …","z. B. Bild, Zuspruch, Ruhe …","Gedanken, Bibelverse, nächste Schritte …"],
+              nb:["f.eks. frykt, sorg, sinne …","f.eks. trygghet, trøst, respekt, autonomi …","f.eks. bilde, ord, ro …","Tanker, bibelvers, neste steg …"],
+              en:["e.g., fear, sadness, anger …","e.g., safety, comfort, respect, autonomy …","e.g., image, words, peace …","Thoughts, verses, next steps …"],
+              es:["p. ej., miedo, tristeza, ira …","p. ej., seguridad, consuelo, respeto, autonomía …","p. ej., imagen, palabras, paz …","Pensamientos, versículos, próximos pasos …"]}[lang];
+  feel.placeholder=ph[0]; need.placeholder=ph[1]; withJesus.placeholder=ph[2]; notes.placeholder=ph[3];
+}
+function renderStep(){ stepName.textContent=steps[idx].title; stepGuidance.textContent=steps[idx].guide; stepIndex.textContent=idx+1; timerEl.textContent=fmt(remaining); }
+function fmt(s){const m=Math.floor(s/60),r=s%60;return m+':'+String(r).padStart(2,'0');}
+function start(){ if(running) return; running=true; if(autoSpeak.checked) speakCurrent();
+  intervalId=setInterval(()=>{ if(remaining>0){ remaining--; timerEl.textContent=fmt(remaining);} else { beep(); next(true);} },1000);
+}
+function pause(){ running=false; if(intervalId){ clearInterval(intervalId); intervalId=null; } }
+function reset(){ pause(); idx=0; remaining=steps[0].s; renderStep(); }
+function next(autostart=false){ pause(); if(idx<steps.length-1){ idx++; remaining=steps[idx].s; renderStep(); if(autoSpeak.checked) speakCurrent(); if(autostart) start(); } }
+function beep(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain();
+  o.type="sine"; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.0001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.01);
+  o.start(); setTimeout(()=>{ g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.1); o.stop(ctx.currentTime+0.12); }, 220);
+}catch(e){} }
+
+function renderDurations(){
+  durationGrid.innerHTML='';
+  steps.forEach((s,i)=>{
+    const box=document.createElement('div');
+    box.className='entry';
+    box.innerHTML = `<div class="small title" style="margin-bottom:4px;">${s.title}</div>
+                     <label class="small muted">${i18n[lang].ui.seconds}</label>
+                     <input type="number" min="10" step="10" value="${s.s}" data-idx="${i}">`;
+    durationGrid.appendChild(box);
+  });
+  durationGrid.querySelectorAll('input[type=number]').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const i=Number(e.target.getAttribute('data-idx')); const v=Math.max(10, Number(e.target.value||0)); steps[i].s=v; if(i===idx){ remaining=v; renderStep(); } saveDurationsLocal();
+    });
+  });
+}
+function saveDurationsLocal(){ localStorage.setItem('nbj_durations_'+lang, JSON.stringify(steps.map(s=>s.s))); }
+function loadDurationsLocal(){ const s=localStorage.getItem('nbj_durations_'+lang); if(!s) return; try{ const arr=JSON.parse(s); steps.forEach((st,i)=>{ if(typeof arr[i]==='number') st.s=arr[i];}); }catch(e){} }
+function populateVoices(){
+  const synth=window.speechSynthesis; if(!synth){ voiceSel.innerHTML='<option>(no voices)</option>'; return; }
+  const vs=synth.getVoices();
+  const allowed=i18n[lang].langCodes;
+  const filtered=vs.filter(v=> allowed.some(code=> (v.lang||'').toLowerCase().startsWith(code.split('-')[0].toLowerCase()) || (v.lang||'')===code ));
+  voiceSel.innerHTML='<option value="">'+(lang==='en'?'Auto voice':'Automatisch')+'</option>'+filtered.map(v=>`<option>${v.name}</option>`).join('');
+}
+function speak(text){
+  const synth=window.speechSynthesis; if(!synth) return;
+  try{synth.cancel();}catch(e){}
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=i18n[lang].langCodes[0];
+  const name=voiceSel.value; if(name){ const v=synth.getVoices().find(x=>x.name===name); if(v) u.voice=v; }
+  u.rate=1; synth.speak(u);
+}
+function speakCurrent(){ speak(steps[idx].title+'. '+steps[idx].guide); }
+
+function loadEntries(){ try{return JSON.parse(localStorage.getItem('nbj_entries')||'[]');}catch(e){return[];} }
+function saveEntries(list){ localStorage.setItem('nbj_entries', JSON.stringify(list)); }
+function renderEntries(){
+  const all=loadEntries(); entriesEl.innerHTML='';
+  if(all.length===0){ const p=document.createElement('p'); p.className='muted small'; p.textContent=i18n[lang].ui.none; entriesEl.appendChild(p); return; }
+  all.forEach(e=>{ const div=document.createElement('div'); div.className='entry'; div.innerHTML=`<div class="small muted">${new Date(e.ts).toLocaleString()}</div>
+    <div class="small"><b>${i18n[lang].ui.feel}:</b> ${esc(e.f||'—')}</div>
+    <div class="small"><b>${i18n[lang].ui.need}:</b> ${esc(e.n||'—')}</div>
+    <div class="small"><b>${i18n[lang].ui.with}:</b> ${esc(e.j||'—')}</div>
+    ${e.o?`<div class="small" style="margin-top:4px;white-space:pre-wrap">${esc(e.o)}</div>`:''}`; entriesEl.appendChild(div); });
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function autosave(){ const lab=autosaveLbl; lab.textContent=(lang==='en'?'Saved ✓':'Gespeichert ✓'); setTimeout(()=>{ lab.textContent=(lang==='en'?'Auto saved ✓':i18n[lang].ui ? 'Automatisch gespeichert ✓' : ''); },800);
+  const draft={ts:Date.now(), f:feel.value, n:need.value, j:withJesus.value, o:notes.value, draft:true};
+  const all=loadEntries(); const ix=all.findIndex(x=>x.draft); if(ix>=0) all[ix]=draft; else all.unshift(draft); saveEntries(all); renderEntries();
+}
+[feel,need,withJesus,notes].forEach(el=>el.addEventListener('input', autosave));
+saveEntryBtn.onclick=()=>{ const all=loadEntries().filter(x=>!x.draft); all.unshift({ts:Date.now(), f:feel.value, n:need.value, j:withJesus.value, o:notes.value}); saveEntries(all); feel.value=need.value=withJesus.value=notes.value=''; autosave(); };
+exportBtn.onclick=()=>{ const data=JSON.stringify(loadEntries(),null,2); const url=URL.createObjectURL(new Blob([data],{type:'application/json'})); const a=document.createElement('a'); a.href=url; a.download='nbj_entries_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); URL.revokeObjectURL(url); };
+clearBtn.onclick=()=>{ if(confirm(lang==='en'?'Delete all?':'Alles löschen?')){ localStorage.removeItem('nbj_entries'); renderEntries(); } };
+
+function makeDictation(btn, target){
+  const SR=window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ btn.disabled=true; btn.textContent='—'; btn.title='No speech recognition'; return; }
+  let rec=new SR(); rec.lang=i18n[lang].srLang; rec.interimResults=true; rec.continuous=true;
+  let base=''; let listening=false;
+  btn.onclick=()=>{
+    if(!listening){ base=target.value? (target.value.trim()+' ') : ''; btn.textContent='⏺'; listening=true; try{ rec.start(); }catch(e){} }
+    else{ try{ rec.stop(); }catch(e){} }
+  };
+  rec.onresult=(ev)=>{ let txt=''; for(let i=0;i<ev.results.length;i++){ txt+=ev.results[i][0].transcript; } target.value=base+txt.trim(); autosave(); };
+  rec.onend=()=>{ if(listening){ listening=false; btn.textContent='🎤'; autosave(); } };
+  rec.onerror=()=>{ listening=false; btn.textContent='🎤'; };
+  return rec;
+}
+function resetDictation(){
+  makeDictation(document.getElementById('micFeel'), feel);
+  makeDictation(document.getElementById('micNeed'), need);
+  makeDictation(document.getElementById('micWith'), withJesus);
+  makeDictation(document.getElementById('micNotes'), notes);
+}
+
+let cmdRecognizer=null;
+function setupVoiceCommands(){
+  if(!voiceCmds.checked){ if(cmdRecognizer && cmdRecognizer.stop) cmdRecognizer.stop(); cmdRecognizer=null; return; }
+  const SR=window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return;
+  const rec=new SR(); rec.lang=i18n[lang].srLang; rec.interimResults=false; rec.continuous=true;
+  rec.onresult=(ev)=>{
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const txt=ev.results[i][0].transcript.trim().toLowerCase();
+      if(matchCmd(txt,'start')) start();
+      else if(matchCmd(txt,'pause')) pause();
+      else if(matchCmd(txt,'next')) next(false);
+      else if(matchCmd(txt,'read')||matchCmd(txt,'repeat')) speakCurrent();
+      else if(matchCmd(txt,'back')) { if(idx>0){ pause(); idx--; remaining=steps[idx].s; renderStep(); if(autoSpeak.checked) speakCurrent(); } }
+      else if(matchCmd(txt,'reset')||matchCmd(txt,'stop')||matchCmd(txt,'finish')) { reset(); }
+    }
+  };
+  rec.onend=()=>{ if(voiceCmds.checked){ try{ rec.start(); }catch(e){} } };
+  try{ rec.start(); cmdRecognizer=rec; }catch(e){}
+}
+function matchCmd(txt, key){
+  const maps={
+    de:{start:["start","los","beginnen"], pause:["pause","stopp","halte an"], next:["weiter","nächster schritt","fortsetzen"], read:["vorlesen","sprich"], repeat:["wiederholen","nochmal"], back:["zurück","vorheriger schritt"], reset:["reset","zurücksetzen"], stop:["stop","beenden"], finish:["fertig","ende"]},
+    nb:{start:["start"], pause:["pause","stopp"], next:["neste","fortsett"], read:["les","les høyt"], repeat:["gjenta"], back:["tilbake"], reset:["reset","nullstill"], stop:["stopp"], finish:["avslutt"]},
+    en:{start:["start","begin"], pause:["pause","stop"], next:["next","continue"], read:["read","speak"], repeat:["repeat","again"], back:["back","previous"], reset:["reset"], stop:["stop"], finish:["finish","end"]},
+    es:{start:["iniciar","comenzar"], pause:["pausa","detener"], next:["siguiente","continuar"], read:["leer"], repeat:["repetir","otra vez"], back:["atrás","anterior"], reset:["reiniciar","restablecer"], stop:["detener","parar"], finish:["terminar","finalizar"]}
+  };
+  const arr=maps[lang][key]||[];
+  return arr.some(w=>txt.includes(w));
+}
+
+startBtn.onclick=start; pauseBtn.onclick=pause; resetBtn.onclick=reset; nextBtn.onclick=()=>next(false); speakBtn.onclick=speakCurrent;
+saveDurationsBtn.onclick=()=>{ saveDurationsLocal(); alert(lang==='en'?'Saved.':'Gespeichert.'); };
+resetDurationsBtn.onclick=()=>{ steps=i18n[lang].steps.map(x=>({...x})); loadDurationsLocal(); renderDurations(); remaining=steps[idx].s; renderStep(); };
+
+btnAudioTest.onclick=()=>{ beep(); speak( lang==='en' ? 'This is an audio test. If connected to your car, you should hear this through the car speakers.' :
+                              lang==='nb' ? 'Dette er en lydtest. Hvis du er koblet til bilen, skal du høre dette gjennom bilens høyttalere.' :
+                              lang==='es' ? 'Esta es una prueba de audio. Si estás conectado al coche, deberías oír esto por los altavoces del coche.' :
+                              'Dies ist ein Audiotest. Wenn dein Handy mit dem Auto verbunden ist, solltest du das über die Lautsprecher hören.' ); };
+
+langSel.onchange=()=>{
+  lang=langSel.value;
+  steps=i18n[lang].steps.map(x=>({...x}));
+  idx=0; loadDurationsLocal(); remaining=steps[0].s;
+  renderUI(); renderStep(); renderDurations(); populateVoices(); resetDictation(); setupVoiceCommands();
+};
+voiceSel.onchange=()=>{};
+voiceCmds.onchange=setupVoiceCommands;
+
+function init(){ resetDictation(); renderEntries(); }
+init();
+
+function renderEntries(){ const all=loadEntries(); entriesEl.innerHTML=''; if(all.length===0){ const p=document.createElement('p'); p.className='muted small'; p.textContent=i18n[lang].ui.none; entriesEl.appendChild(p); return; } all.forEach(e=>{ const div=document.createElement('div'); div.className='entry'; div.innerHTML=`<div class="small muted">${new Date(e.ts).toLocaleString()}</div>
+<div class="small"><b>${i18n[lang].ui.feel}:</b> ${esc(e.f||'—')}</div>
+<div class="small"><b>${i18n[lang].ui.need}:</b> ${esc(e.n||'—')}</div>
+<div class="small"><b>${i18n[lang].ui.with}:</b> ${esc(e.j||'—')}</div>
+${e.o?`<div class="small" style="margin-top:4px;white-space:pre-wrap">${esc(e.o)}</div>`:''}`; entriesEl.appendChild(div); }); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+}catch(e){ showErr(e.message || e); console.error(e); }
+</script>
+</body>
+</html>
