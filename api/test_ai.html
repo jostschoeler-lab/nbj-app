@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KI-Feedback Test</title>
+<style>
+  body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+  .card { background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; max-width:720px; }
+  textarea { width:100%; box-sizing:border-box; }
+  button { padding:8px 14px; border-radius:8px; border:none; background:#0a7; color:#fff; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:default; }
+  .entry { background:#f8fbff; border:1px solid #e5f0ff; border-radius:8px; padding:10px; margin-top:8px; white-space:pre-wrap; }
+</style>
+
+<div class="card">
+  <h1>KI-Feedback (Test)</h1>
+
+  <label>Sprache:
+    <select id="aiLang">
+      <option value="de">Deutsch</option>
+      <option value="nb">Norwegisch (Bokmål)</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </label>
+
+  <textarea id="aiIn" rows="5" placeholder="Schreibe hier deine Frage oder einen NBJ-Schritt…"></textarea>
+  <p><button id="aiBtn" onclick="sendAI()">KI-Feedback testen</button></p>
+  <div id="aiOut" class="entry"></div>
+</div>
+
+<script>
+async function sendAI(){
+  const btn = document.getElementById('aiBtn');
+  const out = document.getElementById('aiOut');
+  const text = document.getElementById('aiIn').value.trim();
+  const lang = document.getElementById('aiLang').value;
+
+  if(!text){ out.textContent = 'Bitte Text eingeben.'; return; }
+
+  btn.disabled = true;
+  out.textContent = 'Sende an KI …';
+
+  try{
+    const res = await fetch('/api/nbj_feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang, text })
+    });
+
+    if(!res.ok){
+      const msg = await res.text();
+      throw new Error('Serverfehler ' + res.status + ': ' + msg);
+    }
+
+    const data = await res.json();
+    const reply = data.reply || data.answer || data.message || JSON.stringify(data, null, 2);
+    out.textContent = reply;
+
+  }catch(err){
+    out.textContent = 'Fehler: ' + err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+</html>
