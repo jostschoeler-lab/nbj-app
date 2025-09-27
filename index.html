@@ -39,27 +39,31 @@
 
   <div class="card">
     <div class="row">
-      <label class="small"><div class="small title" id="lblLang">Sprache</div>
-        <select id="langSel">
-          <option value="de">Deutsch</option>
-          <option value="nb">Norsk (Bokmål)</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <label class="small"><div class="small title" id="lblPerspective">Perspektive</div>
+      <label class="small">
+  <div class="small title" id="lblLang">Sprache</div>
+  <select id="langSel">
+    <option value="de">Deutsch</option>
+    <option value="nb">Norsk (Bokmål)</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+</label>
+
+<label class="small">
+  <div class="small title" id="lblPerspective">Perspektive</div>
   <select id="perspectiveSel">
-    <option value="bcc">BCC</option>
-    <option value="pfingstlich">Pfingstlich</option>
-    <option value="katholisch">Katholisch</option>
-    <option value="evangelisch">Evangelisch</option>
-    <option value="methodistisch">Methodistisch</option>
-    <option value="baptistisch">Baptistisch</option>
-    <option value="psychologisch" selected>Psychologisch</option>
-    <option value="psychotherapeutisch">Psychotherapeutisch</option>
+    <!-- WICHTIG: nutze IDs, die zu deinen vorhandenen PROMPTS passen -->
+    <option value="psychology_simple" selected>Psychologisch</option>
+    <option value="biblical_neutral">Biblisch</option>
+    <option value="combined">Kombiniert</option>
+    <option value="academic">Fachlich</option>
+    <!-- Später kannst du pfingstlich/katholisch/evangelisch/baptistisch ergänzen,
+         sobald du dafür PROMPTS angelegt hast -->
   </select>
 </label>
 
   
-      </label>
+
       <label class="small"><div class="small title" id="lblVoice">Stimme</div>
         <select id="voiceSel"></select>
       </label>
