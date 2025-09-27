@@ -609,11 +609,14 @@ async function sendAI(){
   out.textContent = 'Frage wird an die KI gesendet …';
 
   try{
-    const res = await fetch('/api/nbj_feedback', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ lang, text, perspective })
-    });
+  const perspective = getSelectedPromptText();   // NEU: Prompt-Text aus dem Dropdown holen
+
+  const res = await fetch('/api/nbj_feedback', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ lang, text, perspective })
+  });
+
 
     if(!res.ok){
       const msg = await res.text();
