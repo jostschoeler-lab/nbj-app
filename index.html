@@ -663,6 +663,20 @@ async function sendAI(){
     // Du kannst später weitere (Pfingstlich, Katholisch, Evangelisch, Baptistisch/Methodistisch) ergänzen
   ];
 </script>
+</script>
+
+<script>
+  function getSelectedPromptText() {
+    const sel = document.getElementById('perspectiveSel');
+    if (!sel) return "";
+    const id = sel.value;
+    const p = (window.PROMPTS || []).find(x => x.id === id);
+    return p ? p.prompt : "";
+  }
+</script>
+
+</body>
+</html>
 
   
 </body>
