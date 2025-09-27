@@ -630,5 +630,36 @@ async function sendAI(){
 </script>
 <!-- ===== Ende Testblock ===== -->
 
+<script>
+  const PROMPTS = [
+    {
+      id: "psychology_simple",
+      name: "Psychologisch",
+      description: "Einfache psychologische Reflexion mit praktischen Tipps",
+      prompt: "Du bist ein erfahrener Psychotherapeut. Analysiere die folgenden Eingaben (Emotionen, Bedürfnisse, Notizen). Sprich in klarer, verständlicher Sprache, ohne religiöse Begriffe. Nutze psychologisch fundierte Ansätze wie Schematherapie oder Emotionsregulation. Gib praktische Tipps und kleine Übungen für den Alltag, die helfen können, besser mit den Gefühlen und Bedürfnissen umzugehen."
+    },
+    {
+      id: "biblical_neutral",
+      name: "Biblisch",
+      description: "Seelsorgerliche Reflexion mit Bibelversen",
+      prompt: "Du bist ein Seelsorger, der sich auf die Bibel stützt. Analysiere die folgenden Eingaben im Licht des Evangeliums. Zitiere 2–3 passende Bibelverse (mit Buch, Kapitel und Vers), erkläre deren Bedeutung in diesem Zusammenhang und zeige, wie Jesus Trost, Orientierung und Hoffnung schenkt. Vermeide Druck oder moralische Vorwürfe, betone stattdessen Gnade, Liebe und Ermutigung."
+    },
+    {
+      id: "combined",
+      name: "Kombiniert",
+      description: "Integration von Psychologie und Bibel",
+      prompt: "Du bist zugleich Psychotherapeut und christlicher Seelsorger. Verbinde psychologische Einsichten (z. B. Schematherapie, Emotionsregulation, Konsistenztheorie nach Klaus Grawe) mit biblischen Wahrheiten. Zitiere 2–3 Bibelverse, die Hoffnung und Orientierung geben. Erkläre, wie die psychologischen Schritte und die biblische Perspektive zusammenwirken, um Heilung, Wachstum und Verwandlung zu fördern."
+    },
+    {
+      id: "academic",
+      name: "Fachlich",
+      description: "Akademische Reflexion mit Fachbegriffen",
+      prompt: "Du bist Fachautor im Bereich Psychologie und Theologie. Analysiere die folgenden Eingaben auf akademischem Niveau. Nutze Fachbegriffe und Konzepte wie: Konsistenztheorie (Grawe), Schematherapie (Modi), Synergetik/Attraktoren (Haken/Nowak), multidimensionale Spannungsmodelle und die Unterscheidung zwischen „Werken des Leibes“ (unbewusste Sünde) und „Werken des Fleisches“ (bewusste Sünde) nach Johan O. Smith. Schreibe präzise, sachlich und gegliedert. Verweise auf Autoren (Name, Jahr), ohne lange Originalzitate."
+    }
+    // Du kannst später weitere (Pfingstlich, Katholisch, Evangelisch, Baptistisch/Methodistisch) ergänzen
+  ];
+</script>
+
+  
 </body>
 </html>
